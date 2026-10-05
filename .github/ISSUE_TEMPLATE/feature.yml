@@ -1,0 +1,16 @@
+name: 功能需求
+description: 提出一個新功能或改善
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: 需求說明
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: 驗收條件
+    validations:
+      required: true
