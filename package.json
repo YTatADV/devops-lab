@@ -1,0 +1,12 @@
+{
+  "name": "devops-lab",
+  "version": "0.1.0",
+  "private": true,
+  "description": "DevOps 課程實作範例專案（無第三方套件）",
+  "scripts": {
+    "lint": "bash scripts/lint.sh",
+    "format:check": "bash scripts/format-check.sh",
+    "test": "bash scripts/test.sh",
+    "build": "bash scripts/build.sh"
+  }
+}
