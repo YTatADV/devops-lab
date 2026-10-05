@@ -19,3 +19,5 @@ npm run build
 ```bash
 bash scripts/check-all.sh
 ```
+
+CI 已啟用。
