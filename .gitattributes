@@ -1,0 +1,3 @@
+# 所有文字檔使用 LF 換行，避免 Windows 上的 bash 腳本無法執行
+* text=auto eol=lf
+*.sh text eol=lf
