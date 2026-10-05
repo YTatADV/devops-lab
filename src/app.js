@@ -17,7 +17,7 @@ function sum(items) {
 // 依百分比計算折扣後金額，例如 applyDiscount(1000, 15) → 850
 function applyDiscount(amount, percent) {
   if (percent < 0 || percent > 100) {
-    throw new RangeError('折扣錯誤');
+    throw new RangeError('percent 必須介於 0 到 100');
   }
   return Math.round(amount * (100 - percent) / 100);
 }
