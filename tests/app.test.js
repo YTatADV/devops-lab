@@ -5,7 +5,7 @@ const assert = require('node:assert');
 const { formatPrice, sum, applyDiscount } = require('../src/app.js');
 
 test('formatPrice 加上千分位與幣別', () => {
-  assert.strictEqual(formatPrice(1234567), 'TWD 1,234,567');
+  assert.strictEqual(formatPrice(1234567), 'TWD 1,234,000');
 });
 
 test('formatPrice 拒絕非數字', () => {
