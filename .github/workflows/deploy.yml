@@ -1,0 +1,89 @@
+name: Deploy
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'docs/**'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.ver.outputs.version }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - id: ver
+        env:
+          RUN_NUMBER: ${{ github.run_number }}
+        run: echo "version=1.0.$RUN_NUMBER" >> "$GITHUB_OUTPUT"
+      - name: 建置與測試
+        env:
+          APP_VERSION: ${{ steps.ver.outputs.version }}
+        run: npm ci && npm test && npm run build
+      - run: cd dist && zip -qr ../app.zip .
+      - run: sha256sum app.zip
+      - uses: actions/upload-artifact@v7
+        with:
+          name: app
+          path: app.zip
+          retention-days: 7
+
+  staging:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
+        with:
+          name: app
+      - name: 部署並驗證
+        env:
+          VERSION: ${{ needs.build.outputs.version }}
+        run: |
+          ./scripts/deploy.sh staging "$VERSION" app.zip
+          ./scripts/smoke-test.sh staging
+
+  production:
+    needs: [build, staging]
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+    concurrency:
+      group: deploy-production
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
+        with:
+          name: app
+      - name: 部署並驗證
+        env:
+          VERSION: ${{ needs.build.outputs.version }}
+        run: |
+          ./scripts/deploy.sh production "$VERSION" app.zip
+          ./scripts/smoke-test.sh production
+
+  release:
+    needs: [build, production]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: app
+      - name: 建立 Release 並附上套件
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.build.outputs.version }}
+        run: |
+          gh release create "v$VERSION" app.zip -R "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" --generate-notes
