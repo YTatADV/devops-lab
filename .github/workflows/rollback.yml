@@ -1,0 +1,34 @@
+name: Rollback
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 要部署的 Release Tag，例如 v1.0.1
+        required: true
+        type: string
+      environment:
+        type: choice
+        options: [staging, production]
+        default: production
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    concurrency:
+      group: deploy-${{ inputs.environment }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v7
+      - name: 下載指定版本並部署
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ inputs.version }}
+          TARGET: ${{ inputs.environment }}
+        run: |
+          gh release download "$VERSION" -R "$GITHUB_REPOSITORY" -p app.zip
+          ./scripts/deploy.sh "$TARGET" "$VERSION" app.zip
+          ./scripts/smoke-test.sh "$TARGET"
