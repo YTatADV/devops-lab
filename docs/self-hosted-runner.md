@@ -16,7 +16,7 @@ Set-Location -LiteralPath 'D:\actions-runner-lab06'
 
 看到 `Listening for Jobs` 後保持視窗開啟。PATH 的設定只影響目前 PowerShell 與其啟動的 Runner，讓 npm 呼叫的 bash 使用 Git Bash。ci.yml 的 run 步驟也明確指定 bash。
 
-各 Job 的 `NPM_CONFIG_CACHE` 指向 Runner 暫存目錄下的 `npm-cache`，避免上傳使用者其他專案累積的 npm 共用快取。仍由 setup-node 保存與還原快取。
+各 Job 的 `NPM_CONFIG_CACHE` 指向 Runner 工作目錄下的 `.npm-cache`，避免上傳使用者其他專案累積的 npm 共用快取。仍由 setup-node 保存與還原快取。
 
 ## 執行實作
 
