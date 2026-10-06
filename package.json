@@ -2,6 +2,9 @@
   "name": "devops-lab",
   "version": "0.1.0",
   "private": true,
+  "dependencies": {
+    "left-pad": "99.0.0"
+  },
   "description": "DevOps 課程實作範例專案（無第三方套件）",
   "scripts": {
     "lint": "bash scripts/lint.sh",
