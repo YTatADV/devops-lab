@@ -48,6 +48,16 @@ jobs:
           path: reports/
           retention-days: 7
 
+      - name: 失敗摘要
+        if: failure()
+        env:
+          NODE: ${{ matrix.node }}
+        run: |
+          {
+            echo "### 測試失敗（Node $NODE）"
+            echo "請下載 Artifact「test-report-node$NODE」查看詳細報告。"
+          } >> "$GITHUB_STEP_SUMMARY"
+
   build:
     needs: test
     runs-on: ubuntu-latest
